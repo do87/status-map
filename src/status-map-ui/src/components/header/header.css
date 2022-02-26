@@ -1,0 +1,11 @@
+.header {
+  border-radius: 6px;
+}
+
+.logo {
+  font-weight: bold;
+}
+
+.navbar-dark {
+  background: #040404;
+}

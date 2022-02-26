@@ -1,0 +1,11 @@
+FROM golang:alpine AS builder
+WORKDIR $GOPATH/src/github.com/do87/status-map/src
+COPY src/status-map-api status-map-api
+COPY src/status-map-shared status-map-shared
+WORKDIR $GOPATH/src/github.com/do87/status-map/src/status-map-api
+RUN GO111MODULE=on CGO_ENABLED=0 GOSUMDB=off go build -v -installsuffix cgo -ldflags "-extldflags '-static' -w -s" -o /go/bin/app
+
+FROM scratch
+USER 1000
+COPY --from=builder /go/bin/app /run/app
+ENTRYPOINT ["/run/app"]

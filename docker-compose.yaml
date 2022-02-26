@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    environment:
+      - ODJ_EE_HTTP_PORT=3000
+      - ODJ_SIBLING_STATUS_MAP_API_URI=api
+    ports:
+      - "3000:3000"
+    restart: "always"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      - ODJ_EE_HTTP_PORT=8080
+      - ODJ_SIBLING_STATUS_MAP_API_URI=api
+      - ODJ_DEP_STATUS_MAP_DB_HOST=db
+      - ODJ_DEP_STATUS_MAP_DB_DATABASE=statusmap
+      - ODJ_DEP_STATUS_MAP_DB_USER=postgres
+      - ODJ_DEP_STATUS_MAP_DB_PASSWORD=postgres
+      - LOCAL=true
+    ports:
+      - "8080:8080"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    restart: "always"
+    environment:
+      - LOCAL=true
+      - ODJ_DEP_STATUS_MAP_DB_HOST=db
+      - ODJ_DEP_STATUS_MAP_DB_DATABASE=statusmap
+      - ODJ_DEP_STATUS_MAP_DB_USER=postgres
+      - ODJ_DEP_STATUS_MAP_DB_PASSWORD=postgres
+      - DB_SSL_MODE=disable
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=statusmap
+    volumes:
+      - ./.local/db:/var/lib/postgresql/data

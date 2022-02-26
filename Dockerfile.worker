@@ -1,0 +1,17 @@
+# hadolint ignore=DL3006
+# FROM registry.access.redhat.com/ubi8/ubi-minimal as builder
+FROM golang:alpine AS builder
+WORKDIR $GOPATH/src/github.com/do87/status-map/src
+COPY src/status-map-api status-map-api
+COPY src/status-map-shared status-map-shared
+COPY src/status-map-worker status-map-worker
+WORKDIR $GOPATH/src/github.com/do87/status-map/src/status-map-worker
+RUN GO111MODULE=on CGO_ENABLED=0 GOSUMDB=off go build -v -installsuffix cgo -ldflags "-extldflags '-static' -w -s" -o /go/bin/worker
+
+FROM golang:alpine
+# FROM scratch
+ENV GOOGLE_APPLICATION_CREDENTIALS="/keys/gcp-service-account.json"
+USER 1000
+COPY --from=builder /go/bin/worker /run/worker
+COPY gcp-service-account.json /keys/gcp-service-account.json
+ENTRYPOINT ["/run/worker"]

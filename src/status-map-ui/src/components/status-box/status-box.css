@@ -1,0 +1,42 @@
+a, a:hover {
+    color: #FFF
+}
+
+.status-box-wrapper {
+    line-height: 0;
+    text-align: center;
+}
+
+.status-box-label {
+    display: inline-block;
+    /* background: #f0f0f0; */
+    border-radius: 6px;
+    margin: 5px;
+    line-height: normal;
+    color: #FFF;
+}
+
+.status-box-label-text {
+    display: inline-block;
+    /* position: relative; */
+    /* top: -10px; */
+    padding: 5px 10px;
+    font-size: small;
+
+}
+
+.status-done {
+    background-color: #198754;
+}
+
+.status-error {
+    background: #dc3545;
+}
+
+.status-running {
+    background: #fd7e14;
+}
+
+.status-unknown {
+    background: #474c50;
+}
